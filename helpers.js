@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 /**
  * Logging result body, used in callbacks.
  */
@@ -18,6 +20,9 @@ module.exports.logTitles = (error, result) => {
     } else {
         const hits = result.body.hits.hits;
         console.log(hits.map((hit) => hit._source.title));
+        //const response = (hits.map((hit) => hit._source.title))
+        //s.writeFile('response.json', JSON.stringify({ response: response }, null, 4));
+        //return (hits.map((hit) => hit._source.title))
     }
 };
 

@@ -1,18 +1,19 @@
 const express = require('express');
 const cors = require('cors');
-const { client, indexName: index, recipes } = require("./config");
+const { client, indexName, recipes } = require("./config");
+const { indexName: index } = require("./config");
 const { logBody, logTitles } = require("./helpers");
 
 const app = express();
 
-const PORT = (process.env.PORT || 8080)
+const PORT = (process.env.PORT || 4040)
 
 app.use( express.json() );
 app.use( cors() );
 
 app.listen(PORT, () => console.log(`Running on http://localhost:${PORT}`));
 
-// 
+// inject database, only run once setting up the aiven database
 app.get('/inject', async(req, res) => {
     console.log(`Ingesting data: ${recipes.length} recipes`);
     const body = recipes.flatMap(doc => [
@@ -20,9 +21,9 @@ app.get('/inject', async(req, res) => {
         doc,
       ]);
 
-    client.bulk({ refresh: true, body }, logBody);
+    await client.bulk({ refresh: true, body }, logBody);
 
-    return res.send({msg: "OK"});
+    return res.send({msg: "Data Injected"});
 });
 
 
@@ -45,15 +46,12 @@ app.get('/match', async(req, res) => {
         },
       };
 
-      client.search(
-        {
-          index,
-          body,
-        },
-        logTitles
-      );
+      var response = await client.search({index,body});
 
-    return res.send({msg: logTitles});
+      const hits = response.body.hits.hits;
+      const arr = hits.map((hit) => hit._source.title);
+
+    return res.send({result: arr});
 });
 
 /**
@@ -78,15 +76,17 @@ app.get('/match', async(req, res) => {
         },
       };
 
-      client.search(
+      var response = await client.search(
         {
           index,
           body,
-        },
-        logTitles
+        }
       );
 
-    return res.send({msg: logTitles});
+      const hits = response.body.hits.hits;
+      const arr = hits.map((hit) => hit._source.title);
+
+    return res.send({result: arr});
 });
 
 /**
@@ -107,15 +107,17 @@ app.get('/querystring', async(req, res) => {
         },
       };
 
-      client.search(
+      var response = await client.search(
         {
           index,
           body
-        },
-        logTitles
+        }
       );
 
-    return res.send({msg: logTitles});
+      const hits = response.body.hits.hits;
+      const arr = hits.map((hit) => hit._source.title);
+
+    return res.send({result: arr});
 });
   
   
@@ -136,15 +138,17 @@ app.get('/term', async(req, res) => {
         },
       };
 
-      client.search(
+      var response = await client.search(
         {
           index,
           body,
-        },
-        logTitles
+        }
       );
 
-    return res.send({msg: logTitles});
+      const hits = response.body.hits.hits;
+      const arr = hits.map((hit) => hit._source.title);
+
+    return res.send({result: arr});
 });
 
  /**
@@ -172,13 +176,15 @@ app.get('/range', async(req, res) => {
         },
       };
 
-      client.search(
+      var response = await client.search(
         {
           index,
           body,
-        },
-        logTitles
+        }
       );
 
-    return res.send({msg: logTitles});
+      const hits = response.body.hits.hits;
+      const arr = hits.map((hit) => hit._source.title);
+
+    return res.send({result: arr});
 });
