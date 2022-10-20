@@ -2,4 +2,4 @@ version: '3.9'
 
 services:
   api:
-    build: .
+    image: mabarraza/opensearch-api:1.0
