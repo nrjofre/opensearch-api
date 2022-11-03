@@ -8,7 +8,7 @@ phases:
       - aws ecr get-login-password | docker login --username AWS --password-stdin 113165168204.dkr.ecr.us-east-1.amazonaws.com
       - REPOSITORY_URI=113165168204.dkr.ecr.us-east-1.amazonaws.com/opensearch-api
       - COMMIT_HASH=build-$(echo $CODEBUILD_BUILD_ID | cut -c 1-7)
-      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -f":" '{print $2}')
+      - IMAGE_TAG=build-${COMMIT_HASH:=latest}
   build:
     commands:
       - echo Build completed on `date`
@@ -19,4 +19,5 @@ phases:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
       - docker push $REPOSITORY_URI:$IMAGE_TAG
