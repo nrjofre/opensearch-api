@@ -5,7 +5,7 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+      - $(aws ecr get-login-password --region region | docker login --username AWS --password-stdin aws_account_id.dkr.ecr.region.amazonaws.com)
       - REPOSITORY_URI=113165168204.dkr.ecr.us-east-1.amazonaws.com/opensearch-api
       - COMMIT_HASH=build-$(echo $CODEBUILD_BUILD_ID | cut -c 1-7)
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -f":" '{print $2}')
